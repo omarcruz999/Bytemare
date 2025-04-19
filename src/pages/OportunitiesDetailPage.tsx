@@ -60,8 +60,7 @@ export default function OpportunityDetailPage() {
   }, [id])
 
   const handleApply = () => {
-    // In a real app, this would open an application form or redirect to login
-    alert("Application functionality would be implemented here!")
+    navigate(`/opportunity/${id}/apply`)
   }
 
   const handleGoBack = () => {
