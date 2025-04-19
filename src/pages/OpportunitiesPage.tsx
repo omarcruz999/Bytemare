@@ -1,49 +1,17 @@
 "use client"
 
-import type React from "react"
-
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { VolunteerCard } from "../components/VolunteerCard"
 import api, { type Opportunity } from "../services/api"
-import { Filter, SortDesc, X, ChevronDown } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu"
-
-// Category definitions with colors
-const CATEGORIES: Record<string, { name: string; color: string }> = {
-  education: { name: "Education", color: "#f59e0b" },
-  community: { name: "Community", color: "#60a5fa" },
-  environment: { name: "Environment", color: "#10b981" },
-  healthcare: { name: "Healthcare", color: "#f87171" },
-  animals: { name: "Animals", color: "#a78bfa" },
-  arts: { name: "Arts & Culture", color: "#ec4899" },
-  food: { name: "Food", color: "#fbbf24" },
-  outdoor: { name: "Outdoor", color: "#34d399" },
-  indoor: { name: "Indoor", color: "#818cf8" },
-  default: { name: "Other", color: "#cbd5e1" },
-}
-
-// Sort options
-const SORT_OPTIONS = [
-  { id: "urgency-high", label: "Urgency: High to Low" },
-  { id: "urgency-low", label: "Urgency: Low to High" },
-  { id: "date-new", label: "Date: Newest First" },
-  { id: "date-old", label: "Date: Oldest First" },
-  { id: "distance", label: "Distance: Nearest First" },
-]
 
 export default function OpportunitiesPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const city = searchParams.get("city") || ""
-  const [searchQuery, setSearchQuery] = useState(city)
+  const navigate = useNavigate()
+  const city = searchParams.get("city")
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -147,7 +115,7 @@ export default function OpportunitiesPage() {
       default: "#cbd5e1",
     }
 
-    return [
+    const tags = [
       {
         id: 1,
         name: opp.category,
@@ -159,6 +127,20 @@ export default function OpportunitiesPage() {
         color: "#cbd5e1",
       },
     ]
+    
+    if (opp.urgency === 'high') {
+      tags.push({
+        id: 3,
+        name: "High Urgency",
+        color: "#ef4444",
+      })
+    }
+    
+    return tags
+  }
+
+  const handleLearnMore = (id: string | number) => {
+    navigate(`/opportunity/${id}`)
   }
 
   // Get unique categories from opportunities for filter options
@@ -223,137 +205,21 @@ export default function OpportunitiesPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  {/* Filter Button */}
-                  <button
-                    className={`flex items-center gap-2 rounded-lg shadow-md h-[52px] px-5 font-medium ${
-                      activeFilters.length > 0 ? "bg-teal-600 text-white" : "bg-white text-gray-700"
-                    }`}
-                    onClick={() => setShowFilters(!showFilters)}
-                  >
-                    <Filter className="h-5 w-5" />
-                    <span>Filter</span>
-                    {activeFilters.length > 0 && (
-                      <span className="bg-white text-teal-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ml-1">
-                        {activeFilters.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Filter Tags */}
-              {showFilters && (
-                <div className="mt-4 p-6 bg-white rounded-lg shadow-md">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium text-gray-700 text-lg">Filter by Category</h3>
-                    {activeFilters.length > 0 && (
-                      <button onClick={clearFilters} className="text-gray-500 hover:text-gray-700 flex items-center">
-                        <X className="h-4 w-4 mr-1" />
-                        Clear filters
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {availableCategories.map((category) => {
-                      const categoryInfo = CATEGORIES[category.toLowerCase()] || CATEGORIES.default
-                      const isActive = activeFilters.includes(category)
-
-                      return (
-                        <button
-                          key={category}
-                          onClick={() => toggleFilter(category)}
-                          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                            isActive ? "text-white" : "text-gray-700 bg-gray-100 hover:bg-gray-200"
-                          }`}
-                          style={{
-                            backgroundColor: isActive ? categoryInfo.color : undefined,
-                          }}
-                        >
-                          {categoryInfo.name}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <h1 className="text-3xl font-bold text-teal-700 mb-6">
-              {city ? `Volunteer Opportunities in ${city}` : "Volunteer Opportunities"}
-              {activeFilters.length > 0 && (
-                <span className="text-lg font-normal text-gray-500 ml-2">
-                  ({filteredAndSortedOpportunities.length} results)
-                </span>
-              )}
-            </h1>
-
-            {loading && (
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
-              </div>
-            )}
-
-            {error && !loading && (
-              <div className="text-center py-12">
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg inline-block">
-                  <p>{error}</p>
-                  <p className="text-sm mt-2">Try searching for a different city or removing filters.</p>
-                </div>
-              </div>
-            )}
-
-            {!loading && !error && filteredAndSortedOpportunities.length === 0 && (
-              <div className="text-center py-12">
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg inline-block">
-                  <p>No opportunities match your current filters.</p>
-                  <button onClick={clearFilters} className="text-teal-600 hover:text-teal-700 underline mt-2">
-                    Clear all filters
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {!loading && !error && (
-              <div className="grid grid-cols-1 gap-6">
-                {filteredAndSortedOpportunities.map((opp) => (
-                  <VolunteerCard
-                    key={opp._id}
-                    id={opp._id}
-                    title={opp.type_of_work}
-                    city={opp.location}
-                    date={opp.createdAt ? new Date(opp.createdAt).toLocaleDateString() : "Flexible"}
-                    tags={getTagsFromOpportunity(opp)}
-                    imageUrl={opp.image || "/placeholder.svg?height=300&width=400"}
-                    description={opp.description}
-                    organization={opp.org_name}
-                    urgency={opp.urgency}
-                    onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* No results state */}
-            {!loading && !error && opportunities.length === 0 && (
-              <div className="text-center py-12">
-                <div className="bg-white p-8 rounded-xl shadow-md max-w-md mx-auto">
-                  <div className="rounded-full bg-teal-100 p-3 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <Filter className="h-8 w-8 text-teal-600" />
-                  </div>
-                  <h3 className="text-xl font-medium text-gray-800 mb-2">No opportunities found</h3>
-                  <p className="text-gray-600 mb-4">
-                    We couldn't find any volunteer opportunities in {city}. Try searching for a different city or check
-                    back later.
-                  </p>
-                  <button
-                    onClick={() => navigate("/opportunities")}
-                    className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded"
-                  >
-                    Clear Search
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="grid grid-cols-1 gap-6">
+            {opportunities.map((opp) => (
+              <VolunteerCard
+                key={opp._id}
+                id={opp._id}
+                title={opp.type_of_work}
+                city={opp.location}
+                date="Flexible"
+                tags={getTagsFromOpportunity(opp)}
+                imageUrl={opp.image}
+                description={opp.description}
+                organization={opp.org_name}
+                onLearnMore={handleLearnMore}
+              />
+            ))}
           </div>
         </div>
       </main>
