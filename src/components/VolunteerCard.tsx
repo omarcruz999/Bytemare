@@ -19,6 +19,7 @@ interface VolunteerCardProps {
   imageUrl: string
   description: string
   organization: string
+  urgency?: string
   onLearnMore?: (id: string | number) => void
 }
 
@@ -31,6 +32,7 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
   imageUrl,
   description,
   organization,
+  urgency,
   onLearnMore,
 }) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -52,6 +54,22 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
     }
   }
 
+  // Get urgency badge color
+  const getUrgencyColor = () => {
+    if (!urgency) return ""
+
+    switch (urgency.toLowerCase()) {
+      case "high":
+        return "bg-red-100 text-red-800"
+      case "medium":
+        return "bg-orange-100 text-orange-800"
+      case "low":
+        return "bg-blue-100 text-blue-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
+
   return (
     <div
       className={`rounded-lg overflow-hidden shadow-md mb-6 bg-white transition-transform duration-200 ${
@@ -63,19 +81,25 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
       <div className={`flex flex-col ${isDesktop ? "md:flex-row" : ""}`}>
         {/* Image */}
         <div className={`w-full ${isDesktop ? "md:w-1/3" : "h-52"} overflow-hidden`}>
-          <img
-            src={imageUrl || "/placeholder.svg"}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
         </div>
 
         {/* Content */}
         <div className="flex-1 p-4 flex flex-col">
           {/* Title + Organization */}
           <div className="mb-3">
-            <h3 className="text-xl font-semibold text-slate-900">{title}</h3>
-            <p className="text-sm text-slate-500">{organization}</p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900">{title}</h3>
+                <p className="text-sm text-slate-500">{organization}</p>
+              </div>
+
+              {urgency && (
+                <span className={`px-2 py-1 rounded text-xs font-medium ${getUrgencyColor()}`}>
+                  {urgency.charAt(0).toUpperCase() + urgency.slice(1)} Urgency
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Location + Date */}
@@ -106,7 +130,7 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
           </div>
 
           {/* Description */}
-          <p className="text-sm text-slate-700 mb-4 flex-grow">{description}</p>
+          <p className="text-sm text-slate-700 mb-4 flex-grow line-clamp-3">{description}</p>
 
           {/* Learn More Button */}
           <div className="mt-auto text-right">
