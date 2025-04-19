@@ -6,7 +6,7 @@ import { useEffect } from "react"
 
 export default function OrganizationRegisterPage() {
   useEffect(() => {
-    document.title = "VolunteerHub - Register Org"
+    document.title = "Helping Hand - Register Org"
   }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex flex-col">

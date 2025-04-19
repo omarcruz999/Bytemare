@@ -215,6 +215,33 @@ const api = {
         return opportunity
       }
     },
+
+    create: async (data: {
+      org_name: string
+      category: string
+      location: string
+      type_of_work: string
+      urgency: string
+      description: string
+      image?: string
+    }): Promise<Opportunity> => {
+      try {
+        const response = await fetch(`${API_URL}/opportunities`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+        if (!response.ok) {
+          throw new Error("Failed to create opportunity")
+        }
+        return response.json()
+      } catch (error) {
+        console.error("Error creating opportunity:", error)
+        throw error
+      }
+    },
   },
 
   // Volunteers
@@ -248,20 +275,72 @@ const api = {
       return response.json()
     },
 
-    getLeaderboard: async (
-      city: string,
-    ): Promise<
-      Array<{
-        _id: string
-        name: string
-        eventsCount: number
-      }>
-    > => {
-      const response = await fetch(`${API_URL}/volunteers/leaderboard/${city}`)
+    create: async (data: {
+      name: string
+      email: string
+      phone: number
+      aboutMe?: string
+      preferredCategories?: string[]
+      profileImage?: string
+    }): Promise<Volunteer> => {
+      const response = await fetch(`${API_URL}/volunteers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
       if (!response.ok) {
-        throw new Error(`Failed to fetch leaderboard for ${city}`)
+        throw new Error("Failed to create volunteer profile")
       }
       return response.json()
+    },
+
+    getLeaderboard: async (city: string): Promise<{ _id: string; name: string; eventsCount: number; profileImage?: string }[]> => {
+      try {
+        const response = await fetch(`${API_URL}/volunteers/leaderboard/${city}`)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch leaderboard for ${city}`)
+        }
+        return response.json()
+      } catch (error) {
+        console.warn("Generating leaderboard from volunteer data due to API error:", error)
+        
+        // Fetch all volunteers from the database
+        try {
+          // Get all volunteers
+          const allVolunteers = await api.volunteers.getAll();
+          
+          // Filter and map volunteers who have worked in this city
+          const cityVolunteers = allVolunteers
+            .filter(volunteer => volunteer.volunteering && volunteer.volunteering[city])
+            .map(volunteer => ({
+              _id: volunteer._id,
+              name: volunteer.name,
+              eventsCount: volunteer.volunteering[city] || 0,
+              profileImage: volunteer.profileImage
+            }))
+            .sort((a, b) => b.eventsCount - a.eventsCount); // Sort by number of events (descending)
+            
+          return cityVolunteers;
+        } catch (err) {
+          console.error("Failed to generate leaderboard:", err);
+          return [];
+        }
+      }
+    },
+
+    getAll: async (): Promise<Volunteer[]> => {
+      try {
+        const response = await fetch(`${API_URL}/volunteers`)
+        if (!response.ok) {
+          throw new Error("Failed to fetch volunteers")
+        }
+        return response.json()
+      } catch (error) {
+        console.error("Failed to fetch volunteers:", error)
+        return [] // Return empty array instead of mock data
+      }
     },
   },
 
@@ -279,6 +358,40 @@ const api = {
       const response = await fetch(`${API_URL}/organizations/${id}`)
       if (!response.ok) {
         throw new Error(`Failed to fetch organization with ID ${id}`)
+      }
+      return response.json()
+    },
+
+    create: async (data: {
+      org_name: string
+      email: string
+      phone: number
+      description: string
+      logoImage?: string
+    }): Promise<Organization> => {
+      const response = await fetch(`${API_URL}/organizations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) {
+        throw new Error("Failed to create organization")
+      }
+      return response.json()
+    },
+
+    addOpportunity: async (orgId: string, opportunityId: string): Promise<Organization> => {
+      const response = await fetch(`${API_URL}/organizations/${orgId}/opportunities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ opportunityId }),
+      })
+      if (!response.ok) {
+        throw new Error(`Failed to add opportunity to organization`)
       }
       return response.json()
     },
