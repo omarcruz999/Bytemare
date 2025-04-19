@@ -7,6 +7,8 @@ import opportunityRoutes from './routes/opportunityRoutes'
 import volunteerRoutes from './routes/volunteerRoutes'
 import organizationRoutes from './routes/organizationRoutes'
 
+// Load local env first, then fall back to regular .env
+dotenv.config({ path: '.env.local' })
 dotenv.config()
 const app = express()
 
