@@ -55,7 +55,7 @@ export default function VolunteerProfile() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-teal-50 to-sky-50">
+      <div className="min-h-screen bg-gradient-to-b from-teal-50 to-sky-50 pt-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Profile Header */}
         <Card className="border-none shadow-md overflow-hidden">
