@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 // Update volunteer profile
 router.put('/:id/profile', async (req, res) => {
   try {
-    const { aboutMe, preferredCategories } = req.body;
+    const { aboutMe, preferredCategories, profileImage } = req.body;
     
     // Find the volunteer
     const volunteer = await Volunteer.findById(req.params.id);
@@ -32,6 +32,10 @@ router.put('/:id/profile', async (req, res) => {
     
     if (preferredCategories !== undefined) {
       volunteer.preferredCategories = preferredCategories;
+    }
+    
+    if (profileImage !== undefined) {
+      volunteer.profileImage = profileImage;
     }
     
     // Save the volunteer
@@ -92,7 +96,7 @@ router.get('/profile/:id', async (req, res) => {
       .populate({
         path: 'history.opportunityId',
         model: 'Opportunity',
-        select: 'org_name category location type_of_work description'
+        select: 'org_name category location type_of_work description image'
       });
     
     if (!volunteer) {
@@ -117,6 +121,7 @@ router.get('/profile/:id', async (req, res) => {
       phone: volunteer.phone,
       aboutMe: volunteer.aboutMe || '',
       preferredCategories: volunteer.preferredCategories || [],
+      profileImage: volunteer.profileImage,
       totalEvents: totalEvents,
       // Include original volunteering data for reference
       eventsByCity: volunteer.volunteering,

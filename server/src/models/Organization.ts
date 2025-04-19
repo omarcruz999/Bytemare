@@ -19,7 +19,12 @@ const organizationSchema = new mongoose.Schema({
   opportunities: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Opportunity'
-  }]
+  }],
+  // Add organization logo/image URL
+  logoImage: {
+    type: String,
+    default: 'https://via.placeholder.com/150'
+  }
 }, { timestamps: true });
 
 const Organization = mongoose.model('Organization', organizationSchema, 'organizations');

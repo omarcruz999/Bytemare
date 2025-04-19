@@ -24,6 +24,10 @@ const opportunitySchema = new mongoose.Schema({
   description: {
     type: String,
     required: true
+  },
+  image: {
+    type: String,
+    default: 'https://via.placeholder.com/300x200'
   }
 }, { timestamps: true });
 

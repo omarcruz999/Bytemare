@@ -41,6 +41,11 @@ const volunteerSchema = new mongoose.Schema({
   preferredCategories: {
     type: [String],
     default: []
+  },
+  // Add profile image URL
+  profileImage: {
+    type: String,
+    default: 'https://via.placeholder.com/150'
   }
 }, { timestamps: true });
 

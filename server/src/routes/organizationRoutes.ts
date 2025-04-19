@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
       .populate({
         path: 'opportunities',
         model: 'Opportunity',
-        select: 'category location type_of_work urgency description'
+        select: 'category location type_of_work urgency description image'
       });
     
     if (!organization) {
@@ -37,7 +37,7 @@ router.get('/:id', async (req, res) => {
 // Create a new organization
 router.post('/', async (req, res) => {
   try {
-    const { org_name, phone, email, description } = req.body;
+    const { org_name, phone, email, description, logoImage } = req.body;
     
     // Check if organization already exists
     const existingOrg = await Organization.findOne({ org_name });
@@ -51,6 +51,7 @@ router.post('/', async (req, res) => {
       phone,
       email,
       description,
+      logoImage: logoImage || 'https://via.placeholder.com/150',
       opportunities: []
     });
     
@@ -64,7 +65,7 @@ router.post('/', async (req, res) => {
 // Update organization
 router.put('/:id', async (req, res) => {
   try {
-    const { org_name, phone, email, description } = req.body;
+    const { org_name, phone, email, description, logoImage } = req.body;
     
     const organization = await Organization.findById(req.params.id);
     if (!organization) {
@@ -76,6 +77,7 @@ router.put('/:id', async (req, res) => {
     if (phone) organization.phone = phone;
     if (email) organization.email = email;
     if (description) organization.description = description;
+    if (logoImage) organization.logoImage = logoImage;
     
     await organization.save();
     res.json(organization);
