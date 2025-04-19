@@ -14,6 +14,66 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Create a new volunteer from Firebase user
+router.post('/', async (req, res) => {
+  try {
+    const { uid, name, email, phone, profileImage } = req.body;
+    
+    // Check if volunteer already exists with this email
+    const existingVolunteer = await Volunteer.findOne({ email });
+    if (existingVolunteer) {
+      return res.status(400).json({ message: 'Volunteer with this email already exists' });
+    }
+    
+    // Create a new volunteer with minimal required info
+    const volunteer = new Volunteer({
+      firebaseUid: uid,  // Store Firebase UID for future reference
+      name: name || email.split('@')[0], // Use name or fallback to email username
+      email,
+      phone: phone || 0,  // Default phone number if not provided
+      profileImage: profileImage || 'https://via.placeholder.com/150', // Default image
+      volunteering: {},  // Empty volunteering record
+      history: [],  // Empty history
+      aboutMe: '',  // Empty about me
+      preferredCategories: []  // Empty preferred categories
+    });
+    
+    await volunteer.save();
+    res.status(201).json({ message: 'Volunteer created successfully', volunteer });
+  } catch (error) {
+    console.error('Error creating volunteer:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
+// Check if a volunteer exists by email
+router.post('/check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    
+    const volunteer = await Volunteer.findOne({ email });
+    
+    if (!volunteer) {
+      return res.status(404).json({ message: 'Volunteer not found' });
+    }
+    
+    res.json({ 
+      message: 'Volunteer found',
+      volunteer: {
+        _id: volunteer._id,
+        name: volunteer.name,
+        email: volunteer.email
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
 // Update volunteer profile
 router.put('/:id/profile', async (req, res) => {
   try {

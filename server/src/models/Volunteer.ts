@@ -14,6 +14,12 @@ const historyEntrySchema = new mongoose.Schema({
 }, { _id: true });
 
 const volunteerSchema = new mongoose.Schema({
+  // Add Firebase UID to link with Firebase Auth
+  firebaseUid: {
+    type: String,
+    unique: true,
+    sparse: true  // Allow null/undefined values to not trigger uniqueness check
+  },
   name: {
     type: String,
     required: true
@@ -24,7 +30,8 @@ const volunteerSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   volunteering: {
     type: mongoose.Schema.Types.Mixed,
