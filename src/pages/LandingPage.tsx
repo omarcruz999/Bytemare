@@ -6,6 +6,8 @@ import { VolunteerCard } from "../components/VolunteerCard.tsx"
 import AboutUs from "../components/AboutUs.tsx"
 import api, { Opportunity } from "../services/api"
 import { useNavigate } from "react-router-dom"
+import { Contact } from "lucide-react"
+import ContactUs from "../components/ContactUs.tsx"
 
 export default function LandingPage() {
   const [urgentOpportunities, setUrgentOpportunities] = useState<Opportunity[]>([])
@@ -120,6 +122,7 @@ export default function LandingPage() {
           </div>
           
           <AboutUs />
+          <ContactUs />
         </div>
       </div>
 
