@@ -9,6 +9,7 @@ import OpportunityDetailPage from "./pages/OportunitiesDetailPage"
 import VolunteerApplicationFormPage from "./pages/VolunteerApplicationFormPage"
 import NewOpportunityForm from "./pages/NewOpportunityForm"
 import Dashboard from "./pages/Dashboard"
+import OrgizationProfile from "./pages/OrginizationProfile"
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -67,6 +68,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route path="/orginization-profile" element={<OrgizationProfile />} /> 
         </Routes>
       </Router>
     </AuthProvider>
