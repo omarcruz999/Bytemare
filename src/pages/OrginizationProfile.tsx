@@ -121,7 +121,7 @@ export default function OrganizationProfile() {
                       </div>
                       <p className="text-gray-500">@{organization.org_name.toLowerCase().replace(/\s+/g, '')}</p>
                     </div>
-                    {userIsOrgOwner && (
+                    { (
                       <div className="flex flex-col gap-2">
                         <Button className="bg-green-600 hover:bg-green-700 self-start">
                           <Edit className="mr-2 h-4 w-4" /> Edit Profile
