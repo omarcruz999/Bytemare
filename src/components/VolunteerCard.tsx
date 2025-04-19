@@ -19,6 +19,7 @@ interface VolunteerCardProps {
   imageUrl: string
   description: string
   organization: string
+  urgency?: string
   onLearnMore: (id: string | number) => void
 }
 
@@ -49,6 +50,20 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
 
   const handleLearnMore = () => {
     onLearnMore(id)
+  }
+
+  const getUrgencyColor = () => {
+    if (!urgency) return ""
+    switch (urgency.toLowerCase()) {
+      case "high":
+        return "bg-red-100 text-red-800"
+      case "medium":
+        return "bg-orange-100 text-orange-800"
+      case "low":
+        return "bg-blue-100 text-blue-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
   }
 
   return (
