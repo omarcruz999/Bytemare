@@ -296,20 +296,51 @@ const api = {
       return response.json()
     },
 
-    getLeaderboard: async (
-      city: string,
-    ): Promise<
-      Array<{
-        _id: string
-        name: string
-        eventsCount: number
-      }>
-    > => {
-      const response = await fetch(`${API_URL}/volunteers/leaderboard/${city}`)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch leaderboard for ${city}`)
+    getLeaderboard: async (city: string): Promise<{ _id: string; name: string; eventsCount: number; profileImage?: string }[]> => {
+      try {
+        const response = await fetch(`${API_URL}/volunteers/leaderboard/${city}`)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch leaderboard for ${city}`)
+        }
+        return response.json()
+      } catch (error) {
+        console.warn("Generating leaderboard from volunteer data due to API error:", error)
+        
+        // Fetch all volunteers from the database
+        try {
+          // Get all volunteers
+          const allVolunteers = await api.volunteers.getAll();
+          
+          // Filter and map volunteers who have worked in this city
+          const cityVolunteers = allVolunteers
+            .filter(volunteer => volunteer.volunteering && volunteer.volunteering[city])
+            .map(volunteer => ({
+              _id: volunteer._id,
+              name: volunteer.name,
+              eventsCount: volunteer.volunteering[city] || 0,
+              profileImage: volunteer.profileImage
+            }))
+            .sort((a, b) => b.eventsCount - a.eventsCount); // Sort by number of events (descending)
+            
+          return cityVolunteers;
+        } catch (err) {
+          console.error("Failed to generate leaderboard:", err);
+          return [];
+        }
       }
-      return response.json()
+    },
+
+    getAll: async (): Promise<Volunteer[]> => {
+      try {
+        const response = await fetch(`${API_URL}/volunteers`)
+        if (!response.ok) {
+          throw new Error("Failed to fetch volunteers")
+        }
+        return response.json()
+      } catch (error) {
+        console.error("Failed to fetch volunteers:", error)
+        return [] // Return empty array instead of mock data
+      }
     },
   },
 

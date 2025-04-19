@@ -5,6 +5,7 @@ import { useSearchParams, useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { VolunteerCard } from "../components/VolunteerCard"
+import LeaderboardCard from "../components/LeaderboardCard"
 import api, { type Opportunity } from "../services/api"
 import { Filter, SortDesc, X, ChevronDown } from "lucide-react"
 import {
@@ -280,62 +281,85 @@ export default function OpportunitiesPage() {
               )}
             </div>
 
-            {/* Results Header */}
-            <h1 className="text-3xl font-bold text-teal-700 mb-6">
-              {city ? `Volunteer Opportunities in ${city}` : "Volunteer Opportunities"}
-              {activeFilters.length > 0 && (
-                <span className="text-lg font-normal text-gray-500 ml-2">
-                  ({filteredAndSortedOpportunities.length} results)
-                </span>
-              )}
-            </h1>
+            {/* Main Content Layout */}
+            <div className="mt-8 grid md:grid-cols-3 gap-6">
+              {/* Results Column - Takes 2/3 on desktop */}
+              <div className="md:col-span-2">
+                {loading && (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+                  </div>
+                )}
 
-            {/* Content States */}
-            {loading && (
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+                {error && !loading && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-700 text-center">
+                    {error}
+                  </div>
+                )}
+
+                {!loading && !error && filteredAndSortedOpportunities.length === 0 && (
+                  <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                    <div className="text-5xl mb-4">🔍</div>
+                    <h3 className="text-xl font-semibold mb-2">No opportunities found</h3>
+                    <p className="text-gray-600 mb-6">
+                      {city ? `We couldn't find any opportunities in ${city}.` : "No opportunities match your filters."}
+                    </p>
+                    {activeFilters.length > 0 && (
+                      <button
+                        onClick={clearFilters}
+                        className="text-teal-600 hover:text-teal-800 font-medium text-sm"
+                      >
+                        Clear all filters
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {!loading &&
+                  !error &&
+                  filteredAndSortedOpportunities.length > 0 &&
+                  filteredAndSortedOpportunities.map((opp) => (
+                    <VolunteerCard
+                      key={opp._id}
+                      id={opp._id}
+                      title={opp.type_of_work}
+                      city={opp.location}
+                      date={opp.createdAt ? new Date(opp.createdAt).toLocaleDateString() : "Flexible"}
+                      tags={getTagsFromOpportunity(opp)}
+                      imageUrl={opp.image}
+                      description={opp.description}
+                      organization={opp.org_name}
+                      urgency={opp.urgency}
+                      onLearnMore={handleLearnMore}
+                    />
+                  ))}
               </div>
-            )}
 
-            {error && !loading && (
-              <div className="text-center py-12">
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg inline-block">
-                  <p>{error}</p>
-                  <p className="text-sm mt-2">Try searching for a different city or removing filters.</p>
+              {/* Sidebar - Takes 1/3 on desktop */}
+              <div className="space-y-6">
+                {/* Leaderboard Card */}
+                {city && <LeaderboardCard city={city} />}
+                
+                {/* Other sidebar content */}
+                <div className="bg-white rounded-lg shadow-md p-4">
+                  <h3 className="font-semibold text-lg border-b pb-2 mb-3">Quick Tips</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-600 font-bold">•</span>
+                      <span>Filter by category to find opportunities matching your interests</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-600 font-bold">•</span>
+                      <span>Look for "High Urgency" tags for opportunities that need immediate help</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-600 font-bold">•</span>
+                      <span>Create an account to save your favorite opportunities and track your volunteer hours</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
-            )}
-
-            {!loading && !error && filteredAndSortedOpportunities.length === 0 && (
-              <div className="text-center py-12">
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg inline-block">
-                  <p>No opportunities match your current filters.</p>
-                  <button onClick={clearFilters} className="text-teal-600 hover:text-teal-700 underline mt-2">
-                    Clear all filters
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {!loading && !error && (
-              <div className="grid grid-cols-1 gap-6">
-                {filteredAndSortedOpportunities.map((opp) => (
-                  <VolunteerCard
-                    key={opp._id}
-                    id={opp._id}
-                    title={opp.type_of_work}
-                    city={opp.location}
-                    date={opp.createdAt ? new Date(opp.createdAt).toLocaleDateString() : "Flexible"}
-                    tags={getTagsFromOpportunity(opp)}
-                    imageUrl={opp.image || "/placeholder.svg"}
-                    description={opp.description}
-                    organization={opp.org_name}
-                    urgency={opp.urgency}
-                    onLearnMore={handleLearnMore}
-                  />
-                ))}
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </main>
