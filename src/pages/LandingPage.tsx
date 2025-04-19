@@ -1,6 +1,11 @@
 import Navbar from "../components/Navbar.tsx"
 import Footer from "../components/Footer.tsx" 
+import { useEffect } from "react"
 export default function LandingPage() {
+  useEffect(() => {
+    document.title = "VolunteerHub"
+  }
+  , [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex flex-col">
       {/* Header */}
@@ -9,7 +14,7 @@ export default function LandingPage() {
       {/* Main Content - Simple Placeholder */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-3xl mx-auto space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-teal-700">Welcome to VolunteerFinder</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-teal-700">Welcome to VolunteerHub</h1>
           <p className="text-xl text-gray-600">
             Connecting volunteers with meaningful opportunities in their communities.
           </p>
