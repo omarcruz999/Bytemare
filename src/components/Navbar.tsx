@@ -34,7 +34,7 @@ export default function Navbar() {
               Contact Us
             </Link>
             <Link
-              to="/login"
+              to="/register"
               className="text-xl font-medium text-white px-4 py-2 rounded"
             >
               Log In
