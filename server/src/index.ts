@@ -3,6 +3,7 @@ import express, { Request, Response } from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import opportunityRoutes from './routes/opportunityRoutes'
 
 dotenv.config()
 const app = express()
@@ -19,6 +20,9 @@ mongoose
 app.get('/', (req: Request, res: Response) => {
   res.send('API is running')
 })
+
+// Routes
+app.use('/api/opportunities', opportunityRoutes)
 
 const PORT = process.env.PORT ?? 5000
 app.listen(PORT, () =>
