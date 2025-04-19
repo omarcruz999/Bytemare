@@ -5,6 +5,7 @@ import HomeView from "../components/HomeView.tsx"
 import { VolunteerCard } from "../components/VolunteerCard.tsx"
 import AboutUs from "../components/AboutUs.tsx"
 import api, { Opportunity } from "../services/api"
+import ContactUs from "../components/ContactUs.tsx"
 
 export default function LandingPage() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
