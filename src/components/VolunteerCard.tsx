@@ -19,7 +19,7 @@ interface VolunteerCardProps {
   imageUrl: string
   description: string
   organization: string
-  onLearnMore?: (id: string | number) => void
+  onLearnMore: (id: string | number) => void
 }
 
 export const VolunteerCard: React.FC<VolunteerCardProps> = ({
@@ -47,9 +47,7 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
   }, [])
 
   const handleLearnMore = () => {
-    if (onLearnMore) {
-      onLearnMore(id)
-    }
+    onLearnMore(id)
   }
 
   return (
@@ -63,11 +61,7 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
       <div className={`flex flex-col ${isDesktop ? "md:flex-row" : ""}`}>
         {/* Image */}
         <div className={`w-full ${isDesktop ? "md:w-1/3" : "h-52"} overflow-hidden`}>
-          <img
-            src={imageUrl || "/placeholder.svg"}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
         </div>
 
         {/* Content */}

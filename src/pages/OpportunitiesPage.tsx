@@ -1,12 +1,15 @@
+"use client"
+
 import { useEffect, useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { VolunteerCard } from "../components/VolunteerCard"
-import api, { Opportunity } from "../services/api"
+import api, { type Opportunity } from "../services/api"
 
 export default function OpportunitiesPage() {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const city = searchParams.get("city")
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(false)
@@ -61,6 +64,10 @@ export default function OpportunitiesPage() {
     ]
   }
 
+  const handleLearnMore = (id: string | number) => {
+    navigate(`/opportunity/${id}`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex flex-col">
       <Navbar />
@@ -86,7 +93,7 @@ export default function OpportunitiesPage() {
                 imageUrl={opp.image}
                 description={opp.description}
                 organization={opp.org_name}
-                onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+                onLearnMore={handleLearnMore}
               />
             ))}
           </div>
