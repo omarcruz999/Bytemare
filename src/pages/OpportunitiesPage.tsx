@@ -152,27 +152,37 @@ export default function OpportunitiesPage() {
     return [...new Set(categories)]
   }, [opportunities])
 
-  const filteredAndSortedOpportunities = useMemo(() => {
+const filteredAndSortedOpportunities = useMemo(() => {
     let result = opportunities
-
+  
     if (activeFilters.length > 0) {
       result = result.filter((opp) => activeFilters.includes(opp.category.toLowerCase()))
     }
-
+  
     return [...result].sort((a, b) => {
+      // Helper function to convert urgency string to numeric value
+      const getUrgencyValue = (urgency: string): number => {
+        switch (urgency.toLowerCase()) {
+          case "high": return 3;
+          case "medium": return 2;
+          case "low": return 1;
+          default: return 0;
+        }
+      };
+  
       switch (activeSortOption) {
         case "urgency-high":
-          return b.urgency.localeCompare(a.urgency)
+          return getUrgencyValue(b.urgency) - getUrgencyValue(a.urgency);
         case "urgency-low":
-          return a.urgency.localeCompare(b.urgency)
+          return getUrgencyValue(a.urgency) - getUrgencyValue(b.urgency);
         case "date-new":
-          return new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
+          return new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime();
         case "date-old":
-          return new Date(a.createdAt || "").getTime() - new Date(b.createdAt || "").getTime()
+          return new Date(a.createdAt || "").getTime() - new Date(b.createdAt || "").getTime();
         case "distance":
-          return 0
+          return 0;
         default:
-          return 0
+          return 0;
       }
     })
   }, [opportunities, activeFilters, activeSortOption])
