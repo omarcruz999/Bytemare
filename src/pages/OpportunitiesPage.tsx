@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useState, useMemo } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
@@ -17,9 +19,9 @@ import {
 
 // Category definitions with colors
 const CATEGORIES: Record<string, { name: string; color: string }> = {
-  education: { name: "Education", color: "#f59e0b" },
-  community: { name: "Community", color: "#60a5fa" },
-  environment: { name: "Environment", color: "#10b981" },
+  education: { name: "Non-profit", color: "#f59e0b" },
+  community: { name: "For-profit", color: "#60a5fa" },
+  environment: { name: "City", color: "#10b981" },
   healthcare: { name: "Healthcare", color: "#f87171" },
   animals: { name: "Animals", color: "#a78bfa" },
   arts: { name: "Arts & Culture", color: "#ec4899" },
@@ -95,9 +97,7 @@ export default function OpportunitiesPage() {
   }
 
   const toggleFilter = (category: string) => {
-    setActiveFilters((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
-    )
+    setActiveFilters((prev) => (prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]))
   }
 
   const clearFilters = () => {
@@ -109,21 +109,23 @@ export default function OpportunitiesPage() {
   }
 
   const getTagsFromOpportunity = (opp: Opportunity) => {
-    const categoryColors: Record<string, string> = {
-      education: "#f59e0b",
-      community: "#60a5fa",
-      city: "#34d399",
-      environment: "#10b981",
-      healthcare: "#f87171",
-      default: "#64748b", // slate-500 (darker than previous)
+    // Map the actual category values to the keys in CATEGORIES
+    const categoryMapping: Record<string, string> = {
+      "non-profit": "education",
+      "for-profit": "community",
+      city: "environment",
+      // Add other mappings as needed
     }
+
+    // Get the mapped category key or use the original category
+    const categoryKey = categoryMapping[opp.category.toLowerCase()] || opp.category.toLowerCase()
 
     // Create an array with category and type_of_work tags
     const tags = [
       {
         id: 1,
-        name: opp.category,
-        color: categoryColors[opp.category] || categoryColors.default,
+        name: CATEGORIES[categoryKey]?.name || opp.category, // Use the display name from CATEGORIES or fallback to original
+        color: CATEGORIES[categoryKey]?.color || CATEGORIES.default.color,
         textColor: "#ffffff", // white text for colored backgrounds
       },
       {
@@ -132,8 +134,8 @@ export default function OpportunitiesPage() {
         color: "#64748b", // slate-500 (darker than previous)
         textColor: "#ffffff", // white text
       },
-    ];
-    
+    ]
+
     // Add urgency tag if high
     if (opp.urgency === "high") {
       tags.push({
@@ -141,48 +143,74 @@ export default function OpportunitiesPage() {
         name: "High Urgency",
         color: "#ef4444", // red-500
         textColor: "#ffffff", // white text
-      });
+      })
     }
-    
-    return tags;
+
+    return tags
   }
 
   const availableCategories = useMemo(() => {
-    const categories = opportunities.map((opp) => opp.category.toLowerCase())
+    // Map the actual category values to the keys in CATEGORIES
+    const categoryMapping: Record<string, string> = {
+      "non-profit": "education",
+      "for-profit": "community",
+      city: "environment",
+      // Add other mappings as needed
+    }
+
+    const categories = opportunities.map((opp) => {
+      const lowerCaseCategory = opp.category.toLowerCase()
+      return categoryMapping[lowerCaseCategory] || lowerCaseCategory
+    })
+
     return [...new Set(categories)]
   }, [opportunities])
 
-const filteredAndSortedOpportunities = useMemo(() => {
+  const filteredAndSortedOpportunities = useMemo(() => {
     let result = opportunities
-  
+
     if (activeFilters.length > 0) {
-      result = result.filter((opp) => activeFilters.includes(opp.category.toLowerCase()))
+      result = result.filter((opp) => {
+        const categoryMapping: Record<string, string> = {
+          "non-profit": "education",
+          "for-profit": "community",
+          city: "environment",
+          // Add other mappings as needed
+        }
+
+        const mappedCategory = categoryMapping[opp.category.toLowerCase()] || opp.category.toLowerCase()
+        return activeFilters.includes(mappedCategory)
+      })
     }
-  
+
     return [...result].sort((a, b) => {
       // Helper function to convert urgency string to numeric value
       const getUrgencyValue = (urgency: string): number => {
         switch (urgency.toLowerCase()) {
-          case "high": return 3;
-          case "medium": return 2;
-          case "low": return 1;
-          default: return 0;
+          case "high":
+            return 3
+          case "medium":
+            return 2
+          case "low":
+            return 1
+          default:
+            return 0
         }
-      };
-  
+      }
+
       switch (activeSortOption) {
         case "urgency-high":
-          return getUrgencyValue(b.urgency) - getUrgencyValue(a.urgency);
+          return getUrgencyValue(b.urgency) - getUrgencyValue(a.urgency)
         case "urgency-low":
-          return getUrgencyValue(a.urgency) - getUrgencyValue(b.urgency);
+          return getUrgencyValue(a.urgency) - getUrgencyValue(b.urgency)
         case "date-new":
-          return new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime();
+          return new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime()
         case "date-old":
-          return new Date(a.createdAt || "").getTime() - new Date(b.createdAt || "").getTime();
+          return new Date(a.createdAt || "").getTime() - new Date(b.createdAt || "").getTime()
         case "distance":
-          return 0;
+          return 0
         default:
-          return 0;
+          return 0
       }
     })
   }, [opportunities, activeFilters, activeSortOption])
@@ -302,9 +330,7 @@ const filteredAndSortedOpportunities = useMemo(() => {
                 )}
 
                 {error && !loading && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-700 text-center">
-                    {error}
-                  </div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-700 text-center">{error}</div>
                 )}
 
                 {!loading && !error && filteredAndSortedOpportunities.length === 0 && (
@@ -315,10 +341,7 @@ const filteredAndSortedOpportunities = useMemo(() => {
                       {city ? `We couldn't find any opportunities in ${city}.` : "No opportunities match your filters."}
                     </p>
                     {activeFilters.length > 0 && (
-                      <button
-                        onClick={clearFilters}
-                        className="text-teal-600 hover:text-teal-800 font-medium text-sm"
-                      >
+                      <button onClick={clearFilters} className="text-teal-600 hover:text-teal-800 font-medium text-sm">
                         Clear all filters
                       </button>
                     )}
@@ -349,7 +372,7 @@ const filteredAndSortedOpportunities = useMemo(() => {
               <div className="space-y-6">
                 {/* Leaderboard Card */}
                 {city && <LeaderboardCard city={city} />}
-                
+
                 {/* Other sidebar content */}
                 <div className="bg-white rounded-lg shadow-md p-4">
                   <h3 className="font-semibold text-lg border-b pb-2 mb-3">Quick Tips</h3>
