@@ -3,8 +3,13 @@ import Footer from "../components/Footer.tsx"
 import HomeView from "../components/HomeView.tsx"
 import { VolunteerCard } from "../components/VolunteerCard.tsx"
 import AboutUs  from "../components/AboutUs.tsx"
+import { useEffect } from "react"
 
 export default function LandingPage() {
+  useEffect(() => {
+    document.title = "VolunteerHub"
+  }
+  , [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex flex-col">
       {/* Header */}
