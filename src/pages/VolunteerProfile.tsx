@@ -1,12 +1,13 @@
 "use client"
 
 //import { useState } from "react"
-import { CalendarDays, MapPin, Award, Edit, Clock, Heart } from "lucide-react"
+import { CalendarDays, MapPin, Award, Edit, Clock } from "lucide-react" //deleted "Heart" from import
 import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar"
 import { Button } from "../components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/card"
 import { Badge } from "../components/badge"
 import Navbar from "../components/Navbar"
+import { VolunteerCard } from "../components/VolunteerCard.tsx"
 
 // Mock data - would come from your MongoDB in the real implementation
 const volunteerData = {
@@ -76,8 +77,8 @@ export default function VolunteerProfile() {
               <div className="mt-16 md:mt-0 md:ml-36 flex-1">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-800">{volunteerData.fullName}</h1>
-                    <p className="text-gray-500">@{volunteerData.username}</p>
+                    <h1 className="text-2xl font-bold text-gray-800">{"Sarah Johnson"}</h1>
+                    <p className="text-gray-500">@{"SarahJohnson"}</p>
                   </div>
                   <Button className="bg-teal-600 hover:bg-teal-700 self-start">
                     <Edit className="mr-2 h-4 w-4" /> Edit Profile
@@ -86,15 +87,15 @@ export default function VolunteerProfile() {
                 <div className="flex flex-wrap gap-4 mt-4 text-gray-600 text-sm">
                   <div className="flex items-center">
                     <MapPin className="mr-1 h-4 w-4 text-teal-600" />
-                    {volunteerData.location}
+                    {"Portland, OR"}
                   </div>
                   <div className="flex items-center">
                     <CalendarDays className="mr-1 h-4 w-4 text-teal-600" />
-                    Joined {volunteerData.joinDate}
+                    Joined {"March 2023"}
                   </div>
                   <div className="flex items-center">
                     <Clock className="mr-1 h-4 w-4 text-teal-600" />
-                    {volunteerData.volunteerHistory.reduce((acc, curr) => acc + curr.hours, 0)} Total Hours
+                    {"137"} Total Hours
                   </div>
                 </div>
               </div>
@@ -123,46 +124,34 @@ export default function VolunteerProfile() {
         </Card>
 
         {/* Volunteer History */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Volunteer History</h2>
-            <div className="flex items-center text-sm text-teal-600">
-              <Award className="mr-1 h-4 w-4" />
-              {volunteerData.volunteerHistory.length} Opportunities Completed
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {volunteerData.volunteerHistory.map((history) => (
-              <Card key={history.id} className="border-none shadow-md hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-bold text-gray-800">{history.organization}</h3>
-                          <p className="text-teal-600 font-medium">{history.role}</p>
-                        </div>
-                        <Badge className="bg-sky-100 text-sky-800">{history.date}</Badge>
-                      </div>
-                      <p className="mt-2 text-gray-600">{history.description}</p>
-                      <div className="mt-4 flex flex-wrap gap-4 text-sm">
-                        <div className="flex items-center text-gray-500">
-                          <Clock className="mr-1 h-4 w-4 text-teal-600" />
-                          {history.hours} hours
-                        </div>
-                        <div className="flex items-center text-gray-500">
-                          <Heart className="mr-1 h-4 w-4 text-teal-600" />
-                          {history.impact}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <VolunteerCard
+            id="1"
+            title="Park Clean-Up"
+            city="San Francisco"
+            date="April 25, 2025"
+            tags={[
+              { id: 1, name: "Outdoor", color: "#34d399" },
+              { id: 2, name: "Community", color: "#60a5fa" },
+            ]}
+            imageUrl="https://placecats.com/300/200" // or use a placeholder: "https://via.placeholder.com/400x200"
+            description="Help clean up the community park. Tools and snacks provided!"
+            organization="Green SF Org"
+            onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+          />
+          <VolunteerCard
+            id="1"
+            title="Park Clean-Up"
+            city="San Francisco"
+            date="April 25, 2025"
+            tags={[
+              { id: 1, name: "Outdoor", color: "#34d399" },
+              { id: 2, name: "Community", color: "#60a5fa" },
+            ]}
+            imageUrl="https://placecats.com/300/200" // or use a placeholder: "https://via.placeholder.com/400x200"
+            description="Help clean up the community park. Tools and snacks provided!"
+            organization="Green SF Org"
+            onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+          />
 
         {/* Empty State for New Volunteers */}
         {volunteerData.volunteerHistory.length === 0 && (
