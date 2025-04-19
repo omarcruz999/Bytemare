@@ -5,12 +5,26 @@ import { VolunteerCard } from "../components/VolunteerCard.tsx"
 import AboutUs from "../components/AboutUs.tsx"
 import { useEffect } from "react"
 import ContactUs from "../components/ContactUs.tsx"
+import { useLocation } from "react-router-dom"
 
 export default function LandingPage() {
+  const location = useLocation()
+
   useEffect(() => {
     document.title = "VolunteerHub"
-  }
-    , [])
+
+    // scroll to the specified section if passed in location.state
+    const scrollToId = location.state?.scrollToId
+    if (scrollToId === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    } else {
+      const el = document.getElementById(scrollToId)
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" })
+      }
+    }    
+  }, [location])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex flex-col">
       {/* Header */}
