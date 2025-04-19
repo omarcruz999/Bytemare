@@ -1,7 +1,18 @@
-export default function App() {
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import LandingPage from "./pages/LandingPage"
+import UserRegister from "./pages/UserRegister"
+import OrganizationRegisterPage from "./pages/OrganizationRegisterPage"
+
+function App() {
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center text-blue-900">
-      <h1 className="text-5xl font-extrabold">🎉 Tailwind is Live!</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/register" element={<UserRegister />} />
+        <Route path="/organization/register" element={<OrganizationRegisterPage />} />
+      </Routes>
+    </Router>
   )
 }
+
+export default App
