@@ -8,12 +8,8 @@ export default function AboutUs() {
         <div className="space-y-4 flex flex-col items-center text-center justify-center mb-8">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">About Us</h2>
           <p className="text-muted-foreground md:text-xl">
-            VolunteerHub connects passionate individuals with meaningful volunteer opportunities. Our mission is to
+            Helping Hand connects passionate individuals with meaningful volunteer opportunities. Our mission is to
             strengthen communities by making volunteering accessible to everyone.
-          </p>
-          <p className="text-muted-foreground md:text-xl">
-            Founded in 2025, we've helped thousands of volunteers find their perfect match with organizations that
-            need their skills and time.
           </p>
         </div>
 

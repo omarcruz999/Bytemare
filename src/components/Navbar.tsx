@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLocation, useNavigate } from "react-router-dom"
+import Logo from '../assets/Logo.png'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -39,11 +40,17 @@ export default function Navbar() {
             className="flex items-center gap-3 cursor-pointer"
           >
 
-            <div className="rounded-full bg-green-600 p-2">
-              {/* … SVG … */}
+            <div className="rounded-full p-2">
+              <div>
+                <img
+                  src={Logo}
+                  alt="Helping Hand Logo"
+                  className="h-12 w-12 object-cover" // Increased size for better visibility
+                />
+              </div>
             </div>
             <span className="text-2xl font-bold text-white"> {/* Bigger font */}
-              VolunteerHub
+              Helping Hand
             </span>
           </button>
 

@@ -52,7 +52,7 @@ export default function VolunteerApplicationFormPage() {
       try {
         const opportunityData = await api.opportunities.getById(id)
         setOpportunity(opportunityData)
-        document.title = `Apply: ${opportunityData.type_of_work} | VolunteerHub`
+        document.title = `Apply: ${opportunityData.type_of_work} | Helping Hand`
       } catch (err) {
         console.error("Failed to fetch opportunity details:", err)
         setError("Failed to load opportunity details. Please try again later.")

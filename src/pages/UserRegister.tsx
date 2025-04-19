@@ -9,7 +9,7 @@ import SignUpForm from "../components/sign-up-form"
 
 export default function UserRegister() {
   useEffect(() => {
-    document.title = "VolunteerHub - Register"
+    document.title = "Helping Hand - Register"
   }
   , [])
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login")
