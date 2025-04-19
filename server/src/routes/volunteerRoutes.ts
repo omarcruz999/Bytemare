@@ -14,6 +14,35 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Update volunteer profile
+router.put('/:id/profile', async (req, res) => {
+  try {
+    const { aboutMe, preferredCategories } = req.body;
+    
+    // Find the volunteer
+    const volunteer = await Volunteer.findById(req.params.id);
+    if (!volunteer) {
+      return res.status(404).json({ message: 'Volunteer not found' });
+    }
+    
+    // Update fields if provided
+    if (aboutMe !== undefined) {
+      volunteer.aboutMe = aboutMe;
+    }
+    
+    if (preferredCategories !== undefined) {
+      volunteer.preferredCategories = preferredCategories;
+    }
+    
+    // Save the volunteer
+    await volunteer.save();
+    
+    res.json({ message: 'Profile updated successfully', volunteer });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
 // Add an opportunity to volunteer history
 router.post('/:id/history', async (req, res) => {
   try {
@@ -86,6 +115,8 @@ router.get('/profile/:id', async (req, res) => {
       name: volunteer.name,
       email: volunteer.email,
       phone: volunteer.phone,
+      aboutMe: volunteer.aboutMe || '',
+      preferredCategories: volunteer.preferredCategories || [],
       totalEvents: totalEvents,
       // Include original volunteering data for reference
       eventsByCity: volunteer.volunteering,
@@ -132,6 +163,21 @@ router.get('/location/:city', async (req, res) => {
     // Find volunteers who have volunteered in the specified city
     const volunteers = await Volunteer.find({
       [`volunteering.${city}`]: { $exists: true, $gt: 0 }
+    });
+    
+    res.json(volunteers);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
+// Get volunteers by preferred category
+router.get('/category/:category', async (req, res) => {
+  try {
+    const category = req.params.category;
+    // Find volunteers who have this category in their preferred categories
+    const volunteers = await Volunteer.find({
+      preferredCategories: category
     });
     
     res.json(volunteers);

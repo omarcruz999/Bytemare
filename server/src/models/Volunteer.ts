@@ -31,7 +31,17 @@ const volunteerSchema = new mongoose.Schema({
     default: {}
   },
   // Add volunteering history array
-  history: [historyEntrySchema]
+  history: [historyEntrySchema],
+  // Add about me section
+  aboutMe: {
+    type: String,
+    default: ''
+  },
+  // Add preferred categories array
+  preferredCategories: {
+    type: [String],
+    default: []
+  }
 }, { timestamps: true });
 
 const Volunteer = mongoose.model('Volunteer', volunteerSchema, 'volunteers');
