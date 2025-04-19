@@ -74,6 +74,59 @@ router.post('/check-email', async (req, res) => {
   }
 });
 
+// Get volunteer by email
+router.get('/by-email/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+    
+    // Find volunteer by email
+    const volunteer = await Volunteer.findOne({ email })
+      .populate({
+        path: 'history.opportunityId',
+        model: 'Opportunity',
+        select: 'org_name category location type_of_work description image'
+      });
+    
+    if (!volunteer) {
+      return res.status(404).json({ message: 'Volunteer not found' });
+    }
+    
+    // Calculate total volunteering events across all cities
+    let totalEvents = 0;
+    let totalHours = 0;
+    
+    // Sum up all event counts from the volunteering object
+    if (volunteer.volunteering) {
+      Object.values(volunteer.volunteering).forEach(count => {
+        totalEvents += Number(count);
+      });
+    }
+    
+    // Estimate hours (in a real app, you would track actual hours)
+    totalHours = totalEvents * 3; // Assuming 3 hours per event
+    
+    // Create profile response
+    const profile = {
+      _id: volunteer._id,
+      name: volunteer.name,
+      email: volunteer.email,
+      phone: volunteer.phone,
+      aboutMe: volunteer.aboutMe || '',
+      preferredCategories: volunteer.preferredCategories || [],
+      profileImage: volunteer.profileImage,
+      totalEvents: totalEvents,
+      totalHours: totalHours,
+      eventsByCity: volunteer.volunteering,
+      history: volunteer.history,
+      joinDate: volunteer.createdAt
+    };
+    
+    res.json(profile);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
 // Update volunteer profile
 router.put('/:id/profile', async (req, res) => {
   try {

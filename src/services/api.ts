@@ -472,6 +472,49 @@ const api = {
         return [] // Return empty array instead of mock data
       }
     },
+
+    // Get volunteer profile by email
+    getProfileByEmail: async (email: string) => {
+      try {
+        const response = await fetch(`${API_URL}/volunteers/by-email/${email}`, {
+          headers: {
+            ...getAuthHeader()
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch volunteer profile for email ${email}`);
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error("Error getting volunteer profile by email:", error);
+        throw error;
+      }
+    },
+    
+    // Update volunteer profile
+    updateProfile: async (id: string, profileData: any) => {
+      try {
+        const response = await fetch(`${API_URL}/volunteers/${id}/profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeader()
+          },
+          body: JSON.stringify(profileData)
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to update volunteer profile');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error("Error updating volunteer profile:", error);
+        throw error;
+      }
+    },
   },
 
   // Organizations
