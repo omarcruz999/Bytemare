@@ -21,10 +21,10 @@ export default function Navbar() {
 
           {/* Right nav */}
           <div className="hidden md:flex items-center space-x-8"> {/* More space between items */}
-            <a href="#about" className="text-md font-medium text-white px-4 py-2">
+            <a href="#about" className="text-xl font-medium text-white px-4 py-2">
               About
             </a>
-            <a href="#contact" className="text-md font-medium text-white px-4 py-2">
+            <a href="#contact" className="text-xl font-medium text-white px-4 py-2">
               Contact Us
             </a>
             <Link
