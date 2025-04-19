@@ -50,7 +50,7 @@ export default function OpportunitiesPage() {
       default: "#cbd5e1",
     }
 
-    return [
+    const tags = [
       {
         id: 1,
         name: opp.category,
@@ -62,6 +62,16 @@ export default function OpportunitiesPage() {
         color: "#cbd5e1",
       },
     ]
+    
+    if (opp.urgency === 'high') {
+      tags.push({
+        id: 3,
+        name: "High Urgency",
+        color: "#ef4444",
+      })
+    }
+    
+    return tags
   }
 
   const handleLearnMore = (id: string | number) => {

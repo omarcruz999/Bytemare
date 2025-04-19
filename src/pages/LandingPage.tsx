@@ -44,7 +44,8 @@ export default function LandingPage() {
       default: "#cbd5e1", // slate-300
     }
     
-    return [
+    // Create tags array starting with category and urgency
+    const tags = [
       {
         id: 1,
         name: opp.category,
@@ -54,8 +55,19 @@ export default function LandingPage() {
         id: 2,
         name: opp.type_of_work,
         color: "#cbd5e1", // slate-300
-      },
-    ]
+      }
+    ];
+    
+    // Add urgency tag for high urgency opportunities
+    if (opp.urgency === 'high') {
+      tags.push({
+        id: 3,
+        name: "High Urgency",
+        color: "#ef4444", // red-500
+      });
+    }
+    
+    return tags;
   }
   
   const handleLearnMore = (id: string | number) => {
