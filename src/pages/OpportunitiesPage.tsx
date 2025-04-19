@@ -52,7 +52,7 @@ export default function OpportunitiesPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
-    document.title = "Volunteer Opportunities | VolunteerHub"
+    document.title = "Volunteer Opportunities | Helping Hand"
     setSearchQuery(city)
 
     if (!city) return

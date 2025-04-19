@@ -28,7 +28,7 @@ export default function OpportunityDetailPage() {
         // Fetch opportunity details
         const opportunityData = await api.opportunities.getById(id)
         setOpportunity(opportunityData)
-        document.title = `${opportunityData.type_of_work} | VolunteerHub`
+        document.title = `${opportunityData.type_of_work} | Helping Hand`
 
         // Find organization by name
         const orgs = await api.organizations.getAll()
