@@ -1,11 +1,17 @@
 import mongoose from 'mongoose';
 
-// Define a schema for the volunteering object
-const volunteeringSchema = new mongoose.Schema({
-  // Using mongoose.Schema.Types.Mixed to allow for dynamic city keys with number values
-  type: Map,
-  of: Number
-}, { _id: false });
+// Define a schema for volunteer history entries
+const historyEntrySchema = new mongoose.Schema({
+  opportunityId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Opportunity',
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+}, { _id: true });
 
 const volunteerSchema = new mongoose.Schema({
   name: {
@@ -21,10 +27,11 @@ const volunteerSchema = new mongoose.Schema({
     required: true
   },
   volunteering: {
-    type: Map,
-    of: Number,
+    type: mongoose.Schema.Types.Mixed,
     default: {}
-  }
+  },
+  // Add volunteering history array
+  history: [historyEntrySchema]
 }, { timestamps: true });
 
 const Volunteer = mongoose.model('Volunteer', volunteerSchema, 'volunteers');

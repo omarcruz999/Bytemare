@@ -13,6 +13,30 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get top 10 opportunities with high urgency
+router.get('/urgent', async (req, res) => {
+  try {
+    const urgentOpportunities = await Opportunity.find({ urgency: 'high' })
+      .limit(10);
+    
+    res.json(urgentOpportunities);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
+// Get opportunities by location/city
+router.get('/location/:city', async (req, res) => {
+  try {
+    const city = req.params.city;
+    const opportunities = await Opportunity.find({ location: city });
+    
+    res.json(opportunities);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
 // Get opportunity by ID
 router.get('/:id', async (req, res) => {
   try {
