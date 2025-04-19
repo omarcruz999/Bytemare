@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+//import { useState } from "react"
 import { CalendarDays, MapPin, Award, Edit, Clock, Heart } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar"
+import { Button } from "../components/button"
+import { Card, CardContent, CardHeader, CardTitle } from "../components/card"
+import { Badge } from "../components/badge"
 
 // Mock data - would come from your MongoDB in the real implementation
 const volunteerData = {
@@ -49,7 +49,7 @@ const volunteerData = {
 }
 
 export default function VolunteerProfile() {
-  const [activeTab, setActiveTab] = useState("history")
+  //const [activeTab, setActiveTab] = useState("history")
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 to-sky-50 p-4 md:p-8">

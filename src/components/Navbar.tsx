@@ -23,7 +23,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden md:flex space-x-6 items-center">
           <a href="#" className="text-gray-600 hover:text-teal-600 transition duration-200">
             About
           </a>
@@ -36,6 +36,17 @@ export default function Navbar() {
           <a href="#" className="text-gray-600 hover:text-teal-600 transition duration-200">
             Contact
           </a>
+          <Link 
+
+            to="/volunteer/profile"
+
+            className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition duration-200"
+
+          >
+
+            Profile
+
+          </Link>
         </nav>
       </div>
     </header>
