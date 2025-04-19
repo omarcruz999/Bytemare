@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  // const [isAuthenticated, setIsAuthenticated] = useState(false) // UNCOMMENT WHEN AUTH FUNCTIONALITY IS IMPLEMENTED
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -61,6 +62,25 @@ export default function Navbar() {
             >
               Contact Us
             </button>
+            {/* Conditional rendering based on auth state */}
+            {/* USE THIS CODE ONCE WE IMPLEMENT LOGIN FUNCTIONALITY */}
+            {/* {isAuthenticated ? (
+              <Link 
+                to="/volunteer/profile"
+                className="text-xl font-medium text-white px-4 py-2 rounded hover:bg-teal-600"
+              >
+                Profile
+              </Link>
+            ) : (
+              <Link
+                to="/register"
+                className="text-xl font-medium text-white px-4 py-2 rounded hover:bg-teal-600"
+              >
+                Log In
+              </Link>
+            )} */}
+
+            {/* DELETE CODE BELOW ONCE WE HAVE LOG IN FUNCTION IMPLEMENTED */}
             <Link
               to="/register"
               className="text-xl font-medium text-white px-4 py-2 rounded "
@@ -75,6 +95,7 @@ export default function Navbar() {
 
               Profile
             </Link>
+            {/* DELETE CODE ABOVE ONCE WE HAVE LOG IN FUNCTION IMPLEMENTED */}
           </div>
 
           {/* Mobile menu toggle */}
