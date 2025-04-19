@@ -169,12 +169,6 @@ export default function VolunteerProfile() {
                     <Button className="bg-teal-600 hover:bg-teal-700 self-start">
                       <Edit className="mr-2 h-4 w-4" /> Edit Profile
                     </Button>
-                    <Button 
-                      className="bg-teal-600 hover:bg-teal-700 self-start"
-                      onClick={() => navigate("/new-opportunity")}
-                    >
-                     + New Post
-                    </Button>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-4 mt-4 text-gray-600 text-sm">
