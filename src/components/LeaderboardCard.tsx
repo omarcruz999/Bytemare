@@ -131,12 +131,6 @@ export default function LeaderboardCard({ city }: LeaderboardCardProps) {
           </ul>
         )}
       </div>
-
-      {!loading && !error && leaderboard.length > 0 && (
-        <div className="bg-gray-50 p-3 text-center border-t">
-          <button className="text-sm text-teal-600 hover:text-teal-800 font-medium">View All Volunteers</button>
-        </div>
-      )}
     </div>
   )
 }
