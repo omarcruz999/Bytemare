@@ -1,9 +1,27 @@
+import { useState } from 'react';
 import { Search } from '../components/icons/search.tsx';
 import { Button } from '../components/ui/Button.tsx';
 import { Input } from '../components/ui/Input.tsx';
 
+interface SearchProps {
+  onSearch: (city: string) => void;
+}
 
-export default function HomeView() {
+export default function HomeView({ onSearch }: SearchProps) {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = () => {
+      if (searchQuery.trim()) {
+        onSearch(searchQuery.trim());
+      }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+      }
+    };
+
     return (
         <>
         {/* Hero Section with Search as Main Focus */}
@@ -18,10 +36,18 @@ export default function HomeView() {
                   <Search className="absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder="Search for volunteer opportunities, organizations..."
+                    placeholder="Search for volunteer opportunities by city..."
                     className="pl-12 pr-4 py-8 text-lg rounded-full shadow-lg"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleKeyPress}
                   />
-                  <Button className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full px-6 py-6">Search</Button>
+                  <Button 
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full px-6 py-6"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </Button>
                 </div>
               </div>
             </div>
