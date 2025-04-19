@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Navbar from "../components/Navbar.tsx"
 import Footer from "../components/Footer"
@@ -8,6 +8,10 @@ import LoginForm from "../components/login-form"
 import SignUpForm from "../components/sign-up-form"
 
 export default function UserRegister() {
+  useEffect(() => {
+    document.title = "VolunteerHub - Register"
+  }
+  , [])
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login")
 
   return (

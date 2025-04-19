@@ -19,7 +19,7 @@ export default function Navbar() {
               <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path>
               <path d="M3.29 7L12 12l8.71-5M12 22V12"></path>
             </svg>
-            <h1 className="text-xl font-bold text-gray-800">VolunteerFinder</h1>
+            <h1 className="text-xl font-bold text-gray-800">VolunteerHub</h1>
           </Link>
         </div>
 
