@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar"
 import AboutUs from "../components/AboutUs"
 import ContactUs from "../components/ContactUs"
 import { VolunteerCard } from "../components/VolunteerCard"
+import { useNavigate } from "react-router-dom"
 
 const featuredOpportunities = [
   {
@@ -35,6 +36,12 @@ const featuredOpportunities = [
 ]
 
 export default function LandingPage() {
+  const navigate = useNavigate()
+
+  const handleLearnMore = (id: string | number) => {
+    navigate(`/opportunity/${id}`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 flex flex-col">
       <Navbar />
@@ -58,7 +65,7 @@ export default function LandingPage() {
                   imageUrl={opp.imageUrl}
                   description={opp.description}
                   organization={opp.organization}
-                  onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+                  onLearnMore={handleLearnMore}
                 />
               ))}
             </div>
