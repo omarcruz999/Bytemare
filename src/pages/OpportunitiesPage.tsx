@@ -1,13 +1,13 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useState, useMemo } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
-import SearchBar from "../components/SearchBar"
 import { VolunteerCard } from "../components/VolunteerCard"
 import api, { type Opportunity } from "../services/api"
-import { Button } from "../components/ui/Button"
 import { Filter, SortDesc, X, ChevronDown } from "lucide-react"
 import {
   DropdownMenu,
@@ -40,8 +40,10 @@ const SORT_OPTIONS = [
 ]
 
 export default function OpportunitiesPage() {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const city = searchParams.get("city") || ""
+  const [searchQuery, setSearchQuery] = useState(city)
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -53,6 +55,7 @@ export default function OpportunitiesPage() {
 
   useEffect(() => {
     document.title = "Volunteer Opportunities | VolunteerHub"
+    setSearchQuery(city)
 
     if (!city) return
 
@@ -75,6 +78,19 @@ export default function OpportunitiesPage() {
 
     fetchByCity()
   }, [city])
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/opportunities?city=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleSearch()
+    }
+  }
 
   const toggleFilter = (category: string) => {
     setActiveFilters((prev) => (prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]))
@@ -158,28 +174,41 @@ export default function OpportunitiesPage() {
       <main className="flex-1 py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            {/* Search and Filter Section - Wrapped in a container for alignment */}
-            <div className="relative mb-8">
+            {/* Search and Filter Section */}
+            <div className="mb-8">
               {/* Search Bar and Buttons Container */}
-              <div className="flex flex-col md:flex-row items-stretch gap-4">
-                {/* Search Bar Container */}
-                <div className="w-full md:flex-1 relative">
-                  {/* This div ensures SearchBar's parent has the right structure */}
-                  <div className="w-full max-w-none">
-                    <SearchBar />
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                {/* Search Bar Container - Styled to match the image */}
+                <div className="w-full md:w-[700px] bg-white rounded-lg shadow-md overflow-hidden flex items-center h-[52px]">
+                  <div className="flex-1 flex items-center pl-3">
+                    <Search className="h-5 w-5 text-gray-400" />
+                    <input
+                      type="search"
+                      placeholder="Search for volunteer opportunities by city..."
+                      className="w-full px-3 py-3 text-base border-none focus:outline-none focus:ring-0"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                    />
                   </div>
+                  <button
+                    className="bg-green-500 hover:bg-green-600 text-white font-medium h-full px-6"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
                 </div>
 
-                {/* Sort and Filter Buttons - Aligned with search bar */}
-                <div className="flex gap-2 w-full md:w-auto self-center md:self-auto">
+                {/* Sort and Filter Buttons - Styled to match the image */}
+                <div className="flex gap-4 w-full md:w-auto">
                   {/* Sort Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="flex items-center gap-2 bg-white shadow-md h-[60px] px-6">
+                      <button className="flex items-center gap-2 bg-white rounded-lg shadow-md h-[52px] px-5 text-gray-700 font-medium">
                         <SortDesc className="h-5 w-5" />
-                        <span className="text-base">Sort</span>
-                        <ChevronDown className="h-5 w-5" />
-                      </Button>
+                        <span>Sort</span>
+                        <ChevronDown className="h-4 w-4 ml-1" />
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       {SORT_OPTIONS.map((option) => (
@@ -195,39 +224,33 @@ export default function OpportunitiesPage() {
                   </DropdownMenu>
 
                   {/* Filter Button */}
-                  <Button
-                    variant={activeFilters.length > 0 ? "default" : "outline"}
-                    className={`flex items-center gap-2 h-[60px] px-6 ${
-                      activeFilters.length > 0 ? "bg-teal-600" : "bg-white shadow-md"
+                  <button
+                    className={`flex items-center gap-2 rounded-lg shadow-md h-[52px] px-5 font-medium ${
+                      activeFilters.length > 0 ? "bg-teal-600 text-white" : "bg-white text-gray-700"
                     }`}
                     onClick={() => setShowFilters(!showFilters)}
                   >
                     <Filter className="h-5 w-5" />
-                    <span className="text-base">Filter</span>
+                    <span>Filter</span>
                     {activeFilters.length > 0 && (
-                      <span className="bg-white text-teal-700 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                      <span className="bg-white text-teal-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ml-1">
                         {activeFilters.length}
                       </span>
                     )}
-                  </Button>
+                  </button>
                 </div>
               </div>
 
               {/* Filter Tags */}
               {showFilters && (
-                <div className="mt-4 p-4 bg-white rounded-lg shadow-md">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-gray-700">Filter by Category</h3>
+                <div className="mt-4 p-6 bg-white rounded-lg shadow-md">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-medium text-gray-700 text-lg">Filter by Category</h3>
                     {activeFilters.length > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={clearFilters}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
+                      <button onClick={clearFilters} className="text-gray-500 hover:text-gray-700 flex items-center">
                         <X className="h-4 w-4 mr-1" />
                         Clear filters
-                      </Button>
+                      </button>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -239,7 +262,7 @@ export default function OpportunitiesPage() {
                         <button
                           key={category}
                           onClick={() => toggleFilter(category)}
-                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                             isActive ? "text-white" : "text-gray-700 bg-gray-100 hover:bg-gray-200"
                           }`}
                           style={{
@@ -283,9 +306,9 @@ export default function OpportunitiesPage() {
               <div className="text-center py-12">
                 <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg inline-block">
                   <p>No opportunities match your current filters.</p>
-                  <Button variant="link" onClick={clearFilters} className="text-teal-600 mt-2">
+                  <button onClick={clearFilters} className="text-teal-600 hover:text-teal-700 underline mt-2">
                     Clear all filters
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}
@@ -322,7 +345,12 @@ export default function OpportunitiesPage() {
                     We couldn't find any volunteer opportunities in {city}. Try searching for a different city or check
                     back later.
                   </p>
-                  <Button onClick={() => (window.location.href = "/opportunities")}>Clear Search</Button>
+                  <button
+                    onClick={() => navigate("/opportunities")}
+                    className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded"
+                  >
+                    Clear Search
+                  </button>
                 </div>
               </div>
             )}
@@ -332,5 +360,26 @@ export default function OpportunitiesPage() {
 
       <Footer />
     </div>
+  )
+}
+
+// Search icon component
+function Search(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={props.className}
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
   )
 }
