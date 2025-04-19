@@ -47,31 +47,36 @@ export default function OpportunitiesPage() {
       city: "#34d399",
       environment: "#10b981",
       healthcare: "#f87171",
-      default: "#cbd5e1",
+      default: "#64748b", // slate-500 (darker than previous)
     }
 
+    // Create an array with category and type_of_work tags
     const tags = [
       {
         id: 1,
         name: opp.category,
         color: categoryColors[opp.category] || categoryColors.default,
+        textColor: "#ffffff", // white text for colored backgrounds
       },
       {
         id: 2,
         name: opp.type_of_work,
-        color: "#cbd5e1",
+        color: "#64748b", // slate-500 (darker than previous)
+        textColor: "#ffffff", // white text
       },
-    ]
+    ];
     
-    if (opp.urgency === 'high') {
+    // Add urgency tag if high
+    if (opp.urgency === "high") {
       tags.push({
         id: 3,
         name: "High Urgency",
-        color: "#ef4444",
-      })
+        color: "#ef4444", // red-500
+        textColor: "#ffffff", // white text
+      });
     }
     
-    return tags
+    return tags;
   }
 
   const handleLearnMore = (id: string | number) => {

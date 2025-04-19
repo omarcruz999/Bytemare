@@ -8,6 +8,7 @@ type Tag = {
   id: string | number
   name: string
   color?: string
+  textColor?: string
 }
 
 interface VolunteerCardProps {
@@ -91,7 +92,7 @@ export const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <span
                   key={tag.id}
                   className="px-2 py-1 rounded text-xs font-medium"
-                  style={{ backgroundColor: tag.color || "#e2e8f0" }}
+                  style={{ backgroundColor: tag.color || "#e2e8f0", color: tag.textColor || "#ffffff" }}
                 >
                   {tag.name}
                 </span>
