@@ -390,12 +390,14 @@ const api = {
         aboutMe?: string
         preferredCategories?: string[]
         profileImage?: string
+        name?: string
       },
     ): Promise<Volunteer> => {
       const response = await fetch(`${API_URL}/volunteers/${id}/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          ...getAuthHeader(),
         },
         body: JSON.stringify(data),
       })
@@ -489,29 +491,6 @@ const api = {
         return response.json();
       } catch (error) {
         console.error("Error getting volunteer profile by email:", error);
-        throw error;
-      }
-    },
-    
-    // Update volunteer profile
-    updateProfile: async (id: string, profileData: any) => {
-      try {
-        const response = await fetch(`${API_URL}/volunteers/${id}/profile`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            ...getAuthHeader()
-          },
-          body: JSON.stringify(profileData)
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to update volunteer profile');
-        }
-        
-        return response.json();
-      } catch (error) {
-        console.error("Error updating volunteer profile:", error);
         throw error;
       }
     },
