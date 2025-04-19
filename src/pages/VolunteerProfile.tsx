@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar"
 import { Button } from "../components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/card"
 import { Badge } from "../components/badge"
+import Navbar from "../components/Navbar"
 
 // Mock data - would come from your MongoDB in the real implementation
 const volunteerData = {
@@ -52,7 +53,9 @@ export default function VolunteerProfile() {
   //const [activeTab, setActiveTab] = useState("history")
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-sky-50 p-4 md:p-8">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-b from-teal-50 to-sky-50">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Profile Header */}
         <Card className="border-none shadow-md overflow-hidden">
@@ -176,5 +179,6 @@ export default function VolunteerProfile() {
         )}
       </div>
     </div>
+    </>
   )
 }
