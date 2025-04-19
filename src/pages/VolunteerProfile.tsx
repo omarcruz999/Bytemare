@@ -8,6 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/card"
 import { Badge } from "../components/badge"
 import Navbar from "../components/Navbar"
 import { VolunteerCard } from "../components/VolunteerCard.tsx"
+import badge1 from "../assets/VolunteerBadges/bronze1.png"
+import badge2 from "../assets/VolunteerBadges/bronze2.png"
+import badge3 from "../assets/VolunteerBadges/bronze3.png"
+import badge4 from "../assets/VolunteerBadges/bronze4.png"
+import badge5 from "../assets/VolunteerBadges/gold1.png"
+import badge6 from "../assets/VolunteerBadges/gold2.png"
+import badge7 from "../assets/VolunteerBadges/gold3.png"
+import badge8 from "../assets/VolunteerBadges/gold4.png"
+import badge9 from "../assets/VolunteerBadges/silver1.png"
+import badge10 from "../assets/VolunteerBadges/silver2.png"
+import badge11 from "../assets/VolunteerBadges/silver3.png"
+import badge12 from "../assets/VolunteerBadges/silver4.png"
+
+const badges = [badge1, badge2, badge3, badge4, badge5, badge6, badge7, badge8, badge9, badge10, badge11, badge12]
+const randomBadge = badges[Math.floor(Math.random() * badges.length)]
 
 // Mock data - would come from your MongoDB in the real implementation
 const volunteerData = {
@@ -77,7 +92,14 @@ export default function VolunteerProfile() {
               <div className="mt-16 md:mt-0 md:ml-36 flex-1">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-800">{"Sarah Johnson"}</h1>
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-2xl font-bold text-gray-800">{"Sarah Johnson"}</h1>
+                      <img 
+                        src={randomBadge} 
+                        alt="Volunteer Badge" 
+                        className="w-8 h-8 object-contain"
+                      />
+                    </div>
                     <p className="text-gray-500">@{"SarahJohnson"}</p>
                   </div>
                   <Button className="bg-teal-600 hover:bg-teal-700 self-start">
