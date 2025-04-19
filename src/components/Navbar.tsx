@@ -1,14 +1,20 @@
 'use client'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import Logo from '../assets/Logo.png'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  // const [isAuthenticated, setIsAuthenticated] = useState(false) // UNCOMMENT WHEN AUTH FUNCTIONALITY IS IMPLEMENTED
+  const { user, isAuthenticated, logout } = useAuth()
 
   const navigate = useNavigate()
   const location = useLocation()
+  
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   const handleScrollTo = (id: string) => {
     if (location.pathname === "/") {
@@ -38,12 +44,17 @@ export default function Navbar() {
             onClick={() => handleScrollToTop()}
             className="flex items-center gap-3 cursor-pointer"
           >
-
-            <div className="rounded-full bg-green-600 p-2">
-              {/* … SVG … */}
+            <div className="rounded-full p-2">
+              <div>
+                <img
+                  src={Logo}
+                  alt="Helping Hand Logo"
+                  className="h-12 w-12 object-cover" // Increased size for better visibility
+                />
+              </div>
             </div>
             <span className="text-2xl font-bold text-white"> {/* Bigger font */}
-              VolunteerHub
+              Helping Hand
             </span>
           </button>
 
@@ -63,14 +74,21 @@ export default function Navbar() {
               Contact Us
             </button>
             {/* Conditional rendering based on auth state */}
-            {/* USE THIS CODE ONCE WE IMPLEMENT LOGIN FUNCTIONALITY */}
-            {/* {isAuthenticated ? (
-              <Link 
-                to="/volunteer/profile"
-                className="text-xl font-medium text-white px-4 py-2 rounded hover:bg-teal-600"
-              >
-                Profile
-              </Link>
+            {isAuthenticated ? (
+              <>
+                <Link 
+                  to="/volunteer/profile"
+                  className="text-xl font-medium text-white px-4 py-2 rounded hover:bg-teal-600"
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-xl font-medium text-white px-4 py-2 rounded hover:bg-teal-600"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
               <Link
                 to="/register"
@@ -78,24 +96,7 @@ export default function Navbar() {
               >
                 Log In
               </Link>
-            )} */}
-
-            {/* DELETE CODE BELOW ONCE WE HAVE LOG IN FUNCTION IMPLEMENTED */}
-            <Link
-              to="/register"
-              className="text-xl font-medium text-white px-4 py-2 rounded "
-            >
-              Log In
-            </Link>
-
-            <Link
-              to="/volunteer/profile"
-              className="text-xl font-medium text-white px-4 py-2 rounded"
-            >
-
-              Profile
-            </Link>
-            {/* DELETE CODE ABOVE ONCE WE HAVE LOG IN FUNCTION IMPLEMENTED */}
+            )}
           </div>
 
           {/* Mobile menu toggle */}
@@ -105,11 +106,74 @@ export default function Navbar() {
               className="inline-flex items-center justify-center p-3 rounded text-white hover:bg-teal-800"
               aria-label="Toggle menu"
             >
-              {/* … hamburger / close icon … */}
+              {isOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
       </div>
+      
+      {/* Mobile menu */}
+      {isOpen && (
+        <div className="md:hidden bg-teal-800 py-4 px-6">
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => {
+                handleScrollTo("about");
+                setIsOpen(false);
+              }}
+              className="text-lg font-medium text-white py-2"
+            >
+              About
+            </button>
+            <button
+              onClick={() => {
+                handleScrollTo("contact");
+                setIsOpen(false);
+              }}
+              className="text-lg font-medium text-white py-2"
+            >
+              Contact Us
+            </button>
+            
+            {isAuthenticated ? (
+              <>
+                <Link 
+                  to="/volunteer/profile"
+                  className="text-lg font-medium text-white py-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Profile
+                </Link>
+                <button 
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="text-lg font-medium text-white py-2 text-left"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/register"
+                className="text-lg font-medium text-white py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Log In
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   )
 }

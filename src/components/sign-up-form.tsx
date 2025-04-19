@@ -1,9 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../contexts/AuthContext"
+import { Mail } from "lucide-react"
+import { db } from "../services/firebase"
+import { doc, setDoc } from "firebase/firestore"
 
 interface SignUpFormProps {
   onSuccess?: () => void
@@ -20,6 +23,7 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
+  const { register, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,36 +44,117 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
     setError("")
 
     try {
-      // Replace with your actual registration logic
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-        }),
-      })
+      // Use Firebase register function
+      const user = await register(formData.email, formData.password)
+      
+      // Save additional user data to Firestore
+      if (user) {
+        try {
+          await setDoc(doc(db, "users", user.uid), {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            name: `${formData.firstName} ${formData.lastName}`,
+            email: formData.email,
+            role: 'volunteer',
+            createdAt: new Date().toISOString()
+          });
 
-      const data = await response.json()
+          // Also create a record in MongoDB volunteers collection
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/volunteers`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: user.uid,
+              name: `${formData.firstName} ${formData.lastName}`,
+              email: formData.email,
+              phone: 0 // Default value since we don't collect it in the form
+            }),
+          });
 
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed")
+          if (!response.ok) {
+            console.error('Error creating MongoDB volunteer record:', await response.text());
+          }
+        } catch (firestoreErr) {
+          console.error("Error adding user data to Firestore or MongoDB:", firestoreErr);
+        }
       }
 
       // Handle successful registration
       if (onSuccess) {
         onSuccess()
       } else {
-        navigate("/dashboard")
+        navigate("/volunteer/profile")
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred during registration")
     } finally {
       setIsLoading(false)
+    }
+  }
+  
+  const handleGoogleSignup = async () => {
+    try {
+      // Use Firebase Google login function
+      const user = await loginWithGoogle()
+      
+      // We can add additional user data after Google sign-in if needed
+      if (user) {
+        try {
+          // Extract name parts from displayName or use email as fallback
+          const displayName = user.displayName || user.email?.split('@')[0] || '';
+          let firstName = displayName;
+          let lastName = '';
+          
+          // If displayName contains a space, split into firstName and lastName
+          if (displayName.includes(' ')) {
+            const nameParts = displayName.split(' ');
+            firstName = nameParts[0];
+            lastName = nameParts.slice(1).join(' ');
+          }
+
+          // Set basic user data in Firestore
+          await setDoc(doc(db, "users", user.uid), {
+            firstName,
+            lastName,
+            name: displayName,
+            email: user.email,
+            role: 'volunteer',
+            createdAt: new Date().toISOString()
+          });
+
+          // Create a record in MongoDB volunteers collection
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/volunteers`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: user.uid,
+              name: displayName,
+              email: user.email,
+              phone: 0, // Default value
+              profileImage: user.photoURL || undefined
+            }),
+          });
+
+          if (!response.ok) {
+            console.error('Error creating MongoDB volunteer record for Google user:', await response.text());
+          }
+        } catch (err) {
+          console.error("Error saving Google user data:", err);
+        }
+      }
+      
+      // Handle successful registration
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        navigate("/volunteer/profile")
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google sign up failed")
     }
   }
 
@@ -171,6 +256,24 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
           className="w-full py-2 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md shadow transition duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Creating Account..." : "Create Account"}
+        </button>
+        
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+        
+        <button
+          type="button"
+          onClick={handleGoogleSignup}
+          className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+        >
+          <Mail className="h-5 w-5 mr-2" />
+          Sign up with Google
         </button>
       </form>
     </div>

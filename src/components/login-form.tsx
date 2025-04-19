@@ -1,9 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../contexts/AuthContext"
+import { Mail } from "lucide-react"
 
 interface LoginFormProps {
   onSuccess?: () => void
@@ -14,7 +15,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-
+  
+  const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,31 +25,74 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     setError("")
 
     try {
-      // Replace with your actual authentication logic
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed")
-      }
+      // Use the Firebase login function from auth context
+      await login(email, password)
 
       // Handle successful login
       if (onSuccess) {
         onSuccess()
       } else {
-        navigate("/dashboard")
+        navigate("/volunteer/profile")
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred during login")
     } finally {
       setIsLoading(false)
+    }
+  }
+  
+  const handleGoogleLogin = async () => {
+    try {
+      // Use the Firebase Google login function
+      const user = await loginWithGoogle()
+      
+      // Check if user exists in MongoDB - if not, create a record
+      if (user && user.email) {
+        try {
+          // Try to find the user in the volunteers collection
+          const checkResponse = await fetch(`${import.meta.env.VITE_API_URL}/volunteers/check-email`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: user.email }),
+          });
+          
+          // If user doesn't exist, create them
+          if (checkResponse.status === 404) {
+            const displayName = user.displayName || user.email?.split('@')[0] || '';
+            
+            const createResponse = await fetch(`${import.meta.env.VITE_API_URL}/volunteers`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                uid: user.uid,
+                name: displayName,
+                email: user.email,
+                phone: 0, // Default value
+                profileImage: user.photoURL || undefined
+              }),
+            });
+            
+            if (!createResponse.ok) {
+              console.error('Error creating MongoDB volunteer record for Google login:', await createResponse.text());
+            }
+          }
+        } catch (err) {
+          console.error("Error checking/creating user in MongoDB:", err);
+        }
+      }
+      
+      // Handle successful login
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        navigate("/volunteer/profile")
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google login failed")
     }
   }
 
@@ -102,6 +147,24 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           className="w-full py-2 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-md shadow transition duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Signing in..." : "Sign In"}
+        </button>
+        
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+        
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+        >
+          <Mail className="h-5 w-5 mr-2" />
+          Sign in with Google
         </button>
       </form>
     </div>

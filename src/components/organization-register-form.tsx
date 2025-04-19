@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../contexts/AuthContext"
 
 interface OrganizationRegisterFormProps {
   onSuccess?: () => void
@@ -23,6 +24,7 @@ export default function OrganizationRegisterForm({ onSuccess }: OrganizationRegi
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
 
+  const { register } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -43,34 +45,24 @@ export default function OrganizationRegisterForm({ onSuccess }: OrganizationRegi
     setError("")
 
     try {
-      // Replace with your actual organization registration logic
-      const response = await fetch("/api/organization/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          organizationName: formData.organizationName,
-          contactPerson: formData.contactPerson,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-          description: formData.description,
-          website: formData.website,
-        }),
+      // Use the register function from auth context
+      await register({
+        org_name: formData.organizationName,
+        contactPerson: formData.contactPerson,
+        name: formData.organizationName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        description: formData.description,
+        website: formData.website,
+        role: 'organization'
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Organization registration failed")
-      }
 
       // Handle successful registration
       if (onSuccess) {
         onSuccess()
       } else {
-        navigate("/organization/dashboard")
+        navigate("/volunteer/profile")
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred during registration")

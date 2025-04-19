@@ -1,5 +1,12 @@
 // API service for interacting with the backend
 const API_URL = import.meta.env.VITE_API_URL
+export const API_BASE_URL = API_URL
+
+// Helper to get auth header with JWT token
+const getAuthHeader = (): Record<string, string> => {
+  const token = localStorage.getItem('authToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 export interface Opportunity {
   _id: string
@@ -45,6 +52,14 @@ export interface Organization {
   description: string
   opportunities: Array<Opportunity> | Array<string>
   logoImage: string
+}
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: 'volunteer' | 'organization';
+  profileImage?: string;
 }
 
 // Mock data for development
@@ -156,6 +171,120 @@ const MOCK_OPPORTUNITIES: Opportunity[] = [
 ]
 
 const api = {
+  baseUrl: API_URL,
+  
+  // Auth endpoints
+  auth: {
+    // Login
+    login: async (email: string, password: string): Promise<{ user: User; token: string }> => {
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Login failed');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
+    },
+    
+    // Register
+    register: async (userData: any): Promise<{ user: User; token: string }> => {
+      try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Registration failed');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Registration error:', error);
+        throw error;
+      }
+    },
+    
+    // Register Organization
+    registerOrganization: async (orgData: any): Promise<{ user: User; token: string }> => {
+      try {
+        const response = await fetch(`${API_URL}/auth/register/organization`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orgData),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Organization registration failed');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Organization registration error:', error);
+        throw error;
+      }
+    },
+    
+    // Get current logged-in user
+    getCurrentUser: async (): Promise<User> => {
+      try {
+        const response = await fetch(`${API_URL}/auth/me`, {
+          headers: {
+            ...getAuthHeader(),
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to get user data');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Get current user error:', error);
+        throw error;
+      }
+    },
+    
+    // Handle Google OAuth callback
+    handleGoogleCallback: async (code: string): Promise<{ user: User; token: string }> => {
+      try {
+        const response = await fetch(`${API_URL}/auth/google/callback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Google authentication failed');
+        }
+        
+        const data = await response.json();
+        
+        // Save token to localStorage
+        localStorage.setItem('authToken', data.token);
+        
+        return data;
+      } catch (error) {
+        console.error('Google callback error:', error);
+        throw error;
+      }
+    },
+  },
+
   // Opportunities
   opportunities: {
     getAll: async (): Promise<Opportunity[]> => {
@@ -230,6 +359,7 @@ const api = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...getAuthHeader(),
           },
           body: JSON.stringify(data),
         })
