@@ -1,6 +1,10 @@
 import Navbar from "../components/Navbar.tsx"
-import Footer from "../components/Footer.tsx" 
+import Footer from "../components/Footer.tsx"
+import HomeView from "../components/HomeView.tsx"
+import { VolunteerCard } from "../components/VolunteerCard.tsx"
+import AboutUs  from "../components/AboutUs.tsx"
 import { useEffect } from "react"
+
 export default function LandingPage() {
   useEffect(() => {
     document.title = "VolunteerHub"
@@ -11,29 +15,42 @@ export default function LandingPage() {
       {/* Header */}
       <Navbar />
 
-      {/* Main Content - Simple Placeholder */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-teal-700">Welcome to VolunteerHub</h1>
-          <p className="text-xl text-gray-600">
-            Connecting volunteers with meaningful opportunities in their communities.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <a
-              href="/register"
-              className="px-6 py-3 bg-teal-600 text-white font-medium rounded-md shadow hover:bg-teal-700 transition duration-200"
-            >
-              Get Started
-            </a>
-            <a
-              href="/organization/register"
-              className="px-6 py-3 bg-white text-teal-600 font-medium rounded-md shadow border border-teal-200 hover:bg-teal-50 transition duration-200"
-            >
-              Register Organization
-            </a>
-          </div>
+      {/* Main content */}
+      <div className="flex-1 flex justify-center items-start">
+        <div className="mx-auto">
+          <HomeView />
+          <VolunteerCard
+            id="1"
+            title="Park Clean-Up"
+            city="San Francisco"
+            date="April 25, 2025"
+            tags={[
+              { id: 1, name: "Outdoor", color: "#34d399" },
+              { id: 2, name: "Community", color: "#60a5fa" },
+            ]}
+            imageUrl="https://placecats.com/300/200" // or use a placeholder: "https://via.placeholder.com/400x200"
+            description="Help clean up the community park. Tools and snacks provided!"
+            organization="Green SF Org"
+            onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+          />
+          <VolunteerCard
+            id="1"
+            title="Park Clean-Up"
+            city="San Francisco"
+            date="April 25, 2025"
+            tags={[
+              { id: 1, name: "Outdoor", color: "#34d399" },
+              { id: 2, name: "Community", color: "#60a5fa" },
+            ]}
+            imageUrl="https://placecats.com/300/200" // or use a placeholder: "https://via.placeholder.com/400x200"
+            description="Help clean up the community park. Tools and snacks provided!"
+            organization="Green SF Org"
+            onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+          />
+
+          <AboutUs />
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
       <Footer />
