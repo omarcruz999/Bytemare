@@ -126,6 +126,7 @@ export default function LandingPage() {
           </div>
           
           <AboutUs />
+          <ContactUs />
         </div>
       </div>
 
