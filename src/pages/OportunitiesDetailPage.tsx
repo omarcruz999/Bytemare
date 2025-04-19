@@ -157,9 +157,11 @@ export default function OpportunityDetailPage() {
                 <div className="md:col-span-2 space-y-6">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">About This Opportunity</h2>
-                    <Button onClick={() => navigate("/orginization-profile")}>
-                      Organization Profile
-                    </Button>
+                    {organization && (
+                      <Button onClick={() => navigate(`/orginization-profile/${organization._id}`)}>
+                        Organization Profile
+                      </Button>
+                    )}
                     <p className="text-gray-700 whitespace-pre-line">{opportunity.description}</p>
                   </div>
 

@@ -68,7 +68,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          <Route path="/orginization-profile" element={<OrgizationProfile />} /> 
+          <Route path="/orginization-profile/:id" element={<OrgizationProfile />} /> 
         </Routes>
       </Router>
     </AuthProvider>
