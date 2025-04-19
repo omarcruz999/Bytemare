@@ -1,6 +1,6 @@
 "use client"
 
-//import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CalendarDays, MapPin, Award, Edit, Clock } from "lucide-react" //deleted "Heart" from import
 import { Avatar, AvatarFallback, AvatarImage } from "../components/avatar"
 import { Button } from "../components/button"
@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/card"
 import { Badge } from "../components/badge"
 import Navbar from "../components/Navbar"
 import { VolunteerCard } from "../components/VolunteerCard.tsx"
+import api, { Opportunity } from "../services/api"
+import { useNavigate } from "react-router-dom"
 import badge1 from "../assets/VolunteerBadges/bronze1.png"
 import badge2 from "../assets/VolunteerBadges/bronze2.png"
 import badge3 from "../assets/VolunteerBadges/bronze3.png"
@@ -67,6 +69,67 @@ const volunteerData = {
 
 export default function VolunteerProfile() {
   //const [activeTab, setActiveTab] = useState("history")
+  const navigate = useNavigate()
+
+  const [randomOpportunities, setRandomOpportunities] = useState<Opportunity[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleLearnMore = (id: string | number) => {
+    navigate(`/opportunity/${id}`)
+  }
+
+  useEffect(() => {
+
+    const fetchRandomOpportunities = async () => {
+
+      try {
+
+        setLoading(true)
+
+        // Assume api.opportunities.getAll() fetches all opportunities.
+
+        const allOpportunities: Opportunity[] = await api.opportunities.getAll() 
+
+
+
+        // Generate a random count between 2 and 5:
+
+        const randomCount = Math.floor(Math.random() * (5 - 2 + 1)) + 2
+
+
+
+        // Optionally shuffle the array to randomize selection:
+
+        const shuffled = allOpportunities.sort(() => Math.random() - 0.5)
+
+
+
+        // Pick the first 'randomCount' items:
+
+        const selected = shuffled.slice(0, randomCount)
+
+        setRandomOpportunities(selected)
+
+      } catch (err) {
+
+        console.error("Failed to fetch opportunities:", err)
+
+        setError("Failed to load opportunities. Please try again later.")
+
+      } finally {
+
+        setLoading(false)
+
+      }
+
+    }
+
+
+
+    fetchRandomOpportunities()
+
+  }, [])
 
   return (
     <>
@@ -102,9 +165,17 @@ export default function VolunteerProfile() {
                     </div>
                     <p className="text-gray-500">@{"SarahJohnson"}</p>
                   </div>
-                  <Button className="bg-teal-600 hover:bg-teal-700 self-start">
-                    <Edit className="mr-2 h-4 w-4" /> Edit Profile
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button className="bg-teal-600 hover:bg-teal-700 self-start">
+                      <Edit className="mr-2 h-4 w-4" /> Edit Profile
+                    </Button>
+                    <Button 
+                      className="bg-teal-600 hover:bg-teal-700 self-start"
+                      onClick={() => navigate("/new-opportunity")}
+                    >
+                     + New Post
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-4 mt-4 text-gray-600 text-sm">
                   <div className="flex items-center">
@@ -158,7 +229,7 @@ export default function VolunteerProfile() {
             imageUrl="https://placecats.com/300/200" // or use a placeholder: "https://via.placeholder.com/400x200"
             description="Help clean up the community park. Tools and snacks provided!"
             organization="Green SF Org"
-            onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+            onLearnMore={handleLearnMore}
           />
           <VolunteerCard
             id="1"
@@ -172,7 +243,7 @@ export default function VolunteerProfile() {
             imageUrl="https://placecats.com/300/200" // or use a placeholder: "https://via.placeholder.com/400x200"
             description="Help clean up the community park. Tools and snacks provided!"
             organization="Green SF Org"
-            onLearnMore={(id) => console.log(`Clicked Learn More on ID: ${id}`)}
+            onLearnMore={handleLearnMore}
           />
 
         {/* Empty State for New Volunteers */}
@@ -190,6 +261,8 @@ export default function VolunteerProfile() {
         )}
       </div>
     </div>
+
+    
     </>
   )
 }

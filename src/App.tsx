@@ -5,6 +5,7 @@ import VolunteerProfile from "./pages/VolunteerProfile"
 import OrganizationRegisterPage from "./pages/OrganizationRegisterPage"
 import OpportunitiesPage from "./pages/OpportunitiesPage" 
 import OpportunityDetailPage from "./pages/OportunitiesDetailPage"
+import NewOpportunityForm from "./pages/NewOpportunityForm"
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/volunteer/profile" element={<VolunteerProfile />} />
         <Route path="/opportunities" element={<OpportunitiesPage />} /> 
         <Route path="/opportunity/:id" element={<OpportunityDetailPage />} />
+        <Route path="/new-opportunity" element={<NewOpportunityForm />} />
       </Routes>
     </Router>
   )
