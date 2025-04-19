@@ -5,6 +5,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import opportunityRoutes from './routes/opportunityRoutes'
 import volunteerRoutes from './routes/volunteerRoutes'
+import organizationRoutes from './routes/organizationRoutes'
 
 dotenv.config()
 const app = express()
@@ -25,6 +26,7 @@ app.get('/', (req: Request, res: Response) => {
 // Routes
 app.use('/api/opportunities', opportunityRoutes)
 app.use('/api/volunteers', volunteerRoutes)
+app.use('/api/organizations', organizationRoutes)
 
 const PORT = process.env.PORT ?? 5000
 app.listen(PORT, () =>
